@@ -6,7 +6,7 @@ pipeline
     {
         stage('Checkout Code from GitHub')
         {
-            step()
+            steps()
             {
                 git branch: 'DevOpsJulyBatch', url: 'https://github.com/MithunTechnologiesDevOps/maven-web-application.git'
             }
