@@ -63,12 +63,12 @@ pipeline
             }
         }
 
-        #Deployment stage
         stage('Deploy Application in AWS EKS Cluster')
         {
             steps()
             {
                 sh 'kubectl delete deployment webpage-deployment -n production || true'
+                sh 'kubectl delete service webpage-service -n production || true'
                 sh 'kubectl apply -f MavenWebApplication.yaml'
             }
         }
