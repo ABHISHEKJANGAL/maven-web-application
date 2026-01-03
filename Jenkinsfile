@@ -63,6 +63,7 @@ pipeline
             }
         }
 
+        #Deployment stage
         stage('Deploy Application in AWS EKS Cluster')
         {
             steps()
