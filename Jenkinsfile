@@ -37,5 +37,22 @@ pipeline
                 sh 'docker build -t 149536451818.dkr.ecr.ap-south-1.amazonaws.com/login-application:${buildNumber} .'
             }
         }
+
+        stage('Authenticate and Push Docker Image to AWS ECR')
+        {
+            steps()
+            {
+                sh 'aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 149536451818.dkr.ecr.ap-south-1.amazonaws.com'
+                sh 'docker push 149536451818.dkr.ecr.ap-south-1.amazonaws.com/login-application:${buildNumber}'
+            }
+        }
+
+        stage('Remove Docker Image from Jenkins Locally')
+        {
+            steps()
+            {
+                sh 'docker rmi -f 149536451818.dkr.ecr.ap-south-1.amazonaws.com/login-application:${buildNumber}'
+            }
+        }
     }
 }
