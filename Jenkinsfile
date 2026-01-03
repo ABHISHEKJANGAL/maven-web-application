@@ -2,19 +2,9 @@ pipeline
 {
     agent any
 
-    tools
-    {
-        maven 'Maven_3.9.9'
-    }
-
-    environment
-    {
-        buildNumber = "${BUILD_NUMBER}"
-    }
-
     stages
     {
-        stage('Checkout Code from GitHub')
+        stage('Checkout Code to Jenkins from GitHub')
         {
             steps()
             {
@@ -22,53 +12,11 @@ pipeline
             }
         }
 
-        stage('Build Artifact')
+        stage('Build Artifact using Maven')
         {
             steps()
             {
                 sh 'mvn clean package'
-            }
-        }
-
-        stage('Build Docker Image')
-        {
-            steps()
-            {
-                sh 'docker build -t 149536451818.dkr.ecr.ap-south-1.amazonaws.com/maven-web-application:${buildNumber} .'
-            }
-        }
-
-        stage('Authenticate and Push Docker Image to AWS ECR')
-        {
-            steps()
-            {
-                sh 'aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 149536451818.dkr.ecr.ap-south-1.amazonaws.com'
-                sh 'docker push 149536451818.dkr.ecr.ap-south-1.amazonaws.com/maven-web-application:${buildNumber}'
-            }
-        }
-
-        stage('Remove Docker Image from Jenkins Server')
-        {
-            steps()
-            {
-                sh 'docker rmi 149536451818.dkr.ecr.ap-south-1.amazonaws.com/maven-web-application:${buildNumber}'
-            }
-        }
-
-        stage('Update Image Tag in Kubernetes Manifest File')
-        {
-            steps()
-            {
-                sh "sed -i 's/Build_Tag/${buildNumber}/g' MavenWebApplication.yaml"
-            }
-        }
-
-        stage('Deploy Application in AWS EKS Cluster')
-        {
-            steps()
-            {
-                sh 'kubectl delete deployment webpage-deployment -n production || true'
-                sh 'kubectl apply -f MavenWebApplication.yaml'
             }
         }
     }
